@@ -1,8 +1,5 @@
 fastapi
 uvicorn
-langchain
-openai
-faiss-cpu
-tqdm
-python-dotenv
-markdown
+sqlite3
+langchain==0.1.0  # Pin to minimal version
+numpy==1.26.0  # FAISS dependency (smaller version)
