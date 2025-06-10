@@ -1,0 +1,9 @@
+# .vercelignore
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.venv/
+markdown_files/  # Exclude raw markdown (already processed)
+downloaded_threads/  # Exclude JSON files (already processed)
+*.faiss  # Exclude FAISS index if generated separately
