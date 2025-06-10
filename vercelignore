@@ -1,0 +1,10 @@
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+*.db
+*.faiss
+.venv/
+markdown_files/
+downloaded_threads/
+knowledge_base.db
