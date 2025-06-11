@@ -1,5 +1,6 @@
-fastapi
-uvicorn
-sqlite3
-langchain==0.1.0  # Pin to minimal version
-numpy==1.26.0  # FAISS dependency (smaller version)
+fastapi==0.111.0
+uvicorn==0.29.0
+aiohttp==3.9.5
+numpy==1.26.0
+python-dotenv==1.0.1
+sqlite3==0.0.1  # Built-in but declared for compatibility
