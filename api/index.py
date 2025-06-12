@@ -63,6 +63,29 @@ async def answer_question(request: Request, auth: bool = Depends(verify_token)):
         "answer": "I couldn't find an answer. Try asking about: " + ", ".join(KNOWLEDGE_BASE.keys()),
         "links": []
     }
+import logging
+
+logger = logging.getLogger("uvicorn.error")
+
+@app.post("/")
+async def answer_question(request: Request, auth: bool = Depends(verify_token)):
+    try:
+        data = await request.json()
+        # your existing logic here, e.g.,
+        question = data.get("question", "").lower()
+
+        for keyword, response in KNOWLEDGE_BASE.items():
+            if keyword in question:
+                return response
+
+        return {
+            "answer": "I couldn't find an answer. Try asking about: " + ", ".join(KNOWLEDGE_BASE.keys()),
+            "links": []
+        }
+    except Exception as e:
+        logger.error(f"Error in / endpoint: {e}")
+        raise HTTPException(status_code=500, detail="Internal server error")
+
 
 # 👇👇 This is crucial for Vercel
 # Export as `app` so Vercel sees it
