@@ -3,18 +3,24 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from pydantic import BaseModel
 from typing import List
+import logging
+import os
+
+# Setup logging
+logger = logging.getLogger("uvicorn.error")
 
 app = FastAPI()
 security = HTTPBearer()
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=["*"],  # For production, replace "*" with your frontend URLs
     allow_methods=["*"],
     allow_headers=["*"],
 )
 
-API_TOKEN = "eyJhbGciOiJIUzI1NiJ9.eyJlbWFpbCI6IjIzZjIwMDMyNjRAZHMuc3R1ZHkuaWl0bS5hYy5pbiJ9.049Szuxt3TGZ83SEJLY0dEIppr6uYmyjJzj9Dvd_EMg"
+# Use environment variable for API token for security best practice
+API_TOKEN = os.getenv("API_TOKEN", "your_default_token_here")
 
 class Link(BaseModel):
     url: str
@@ -52,26 +58,8 @@ async def verify_token(credentials: HTTPAuthorizationCredentials = Depends(secur
 
 @app.post("/", response_model=AnswerResponse)
 async def answer_question(request: Request, auth: bool = Depends(verify_token)):
-    data = await request.json()
-    question = data.get("question", "").lower()
-
-    for keyword, response in KNOWLEDGE_BASE.items():
-        if keyword in question:
-            return response
-
-    return {
-        "answer": "I couldn't find an answer. Try asking about: " + ", ".join(KNOWLEDGE_BASE.keys()),
-        "links": []
-    }
-import logging
-
-logger = logging.getLogger("uvicorn.error")
-
-@app.post("/")
-async def answer_question(request: Request, auth: bool = Depends(verify_token)):
     try:
         data = await request.json()
-        # your existing logic here, e.g.,
         question = data.get("question", "").lower()
 
         for keyword, response in KNOWLEDGE_BASE.items():
@@ -86,7 +74,5 @@ async def answer_question(request: Request, auth: bool = Depends(verify_token)):
         logger.error(f"Error in / endpoint: {e}")
         raise HTTPException(status_code=500, detail="Internal server error")
 
-
-# 👇👇 This is crucial for Vercel
-# Export as `app` so Vercel sees it
+# Export handler for Vercel
 handler = app
