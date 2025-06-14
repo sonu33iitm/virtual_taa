@@ -4,4 +4,4 @@ python-multipart
 python-dotenv
 numpy
 aiohttp
-sqlite3
+
