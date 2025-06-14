@@ -54,17 +54,6 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# Root endpoint
-@app.get("/")
-async def root():
-    return {
-        "message": "Welcome to the RAG Query API",
-        "endpoints": {
-            "query": "/query (POST)",
-            "health": "/health (GET)"
-        }
-    }
-
 # Verify API key is set
 if not API_KEY:
     logger.error("API_KEY environment variable is not set. The application will not function correctly.")
