@@ -19,7 +19,7 @@ from dotenv import load_dotenv
 
 # Configure logging
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
-logger = logging.getLogger(__name__)
+logger = logging.getLogger(_name_)
 
 # Constants
 DB_PATH = "knowledge_base.db"
@@ -53,6 +53,17 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+# Root endpoint
+@app.get("/")
+async def root():
+    return {
+        "message": "Welcome to the RAG Query API",
+        "endpoints": {
+            "query": "/query (POST)",
+            "health": "/health (GET)"
+        }
+    }
 
 # Verify API key is set
 if not API_KEY:
@@ -561,8 +572,8 @@ def parse_llm_response(response):
                 line = re.sub(r'^-\s*', '', line)
                 
                 # Extract URL and text using more flexible patterns
-                url_match = re.search(r'URL:\s*\[(.*?)\]|url:\s*\[(.*?)\]|\[(http[^\]]+)\]|URL:\s*(http\S+)|url:\s*(http\S+)|(http\S+)', line, re.IGNORECASE)
-                text_match = re.search(r'Text:\s*\[(.*?)\]|text:\s*\[(.*?)\]|[""](.*?)[""]|Text:\s*"(.*?)"|text:\s*"(.*?)"', line, re.IGNORECASE)
+                url_match = re.search(r'URL:\s*\[(.?)\]|url:\s\[(.?)\]|\[(http[^\]]+)\]|URL:\s(http\S+)|url:\s*(http\S+)|(http\S+)', line, re.IGNORECASE)
+                text_match = re.search(r'Text:\s*\[(.?)\]|text:\s\[(.?)\]|[""](.?)[""]|Text:\s*"(.?)"|text:\s"(.*?)"', line, re.IGNORECASE)
                 
                 if url_match:
                     # Find the first non-None group from the regex match
@@ -724,5 +735,5 @@ async def health_check():
             content={"status": "unhealthy", "error": str(e), "api_key_set": bool(API_KEY)}
         )
 
-if __name__ == "__main__":
-    uvicorn.run("app:app", host="127.0.0.1", port=5000, reload=True) 
+if _name_ == "_main_":
+    uvicorn.run("app:app", host="127.0.0.1", port=5000, reload=True)
